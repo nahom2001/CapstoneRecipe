@@ -24,3 +24,18 @@ class Recipe(models.Model):
 
 class User(AbstractUser):
     pass
+
+class Ingredient(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
+
+class Category(models.Model):
+    class Meta:
+        verbose_name_plural = 'Categories'
+    category_name = models.CharField(max_length=200)
+
+    def __str__(self):

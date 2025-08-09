@@ -41,3 +41,9 @@ class Category(models.Model):
 
     def __str__(self):
         return self.category_name
+
+class RecipeIngredient(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=CASCADE) 
+    ingredient = models.ForeignKey(Ingredient, on_delete=CASCADE)
+    quantity = models.FloatField()
+    unit = models.CharField(max_length=20)

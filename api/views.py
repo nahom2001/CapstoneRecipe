@@ -1,3 +1,4 @@
+from rest_framework.parsers import FormParser, MultiPartParser
 from django.shortcuts import render
 from .models import Recipe
 from .serializers import RecipeSummarySerializer, RecipeSerializer
@@ -6,9 +7,29 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
 from rest_framework import status
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 # Create your views here.
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+
+        return token
+    
+class MyTokenObtainPairView(TokenObtainPairView):
+    parser_classes = [FormParser, MultiPartParser]  # Accept form data
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+
 @api_view(['GET'])
 def api_menu(request):
     api_urls = {

@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from .models import Recipe
-from .serializers import RecipeSummarySerializer
+from .serializers import RecipeSummarySerializer, RecipeSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 # Create your views here.
 @api_view(['GET'])
@@ -27,3 +29,10 @@ def recipe_list(request):
     recipes = Recipe.objects.all().order_by('id')
     serializer = RecipeSummarySerializer(recipes, many=True)
     return Response(serializer.data)  # Return serialized data instead of raw queryset
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def recipe_detail(request, pk):
+    recipe = Recipe.objects.get(id=pk)
+    serializer = RecipeSerializer(recipe, many=False)
+    return Response(serializer.data)

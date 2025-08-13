@@ -2,9 +2,8 @@ from django.db import models
 from django.db.models import CASCADE
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
-
 # Create your models here.
+
 
 class Recipe(models.Model):
     title = models.CharField(max_length=200, blank=False)
@@ -22,7 +21,6 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.title
-
 
 class User(AbstractUser):
     pass
@@ -42,6 +40,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.category_name
+
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=CASCADE) 

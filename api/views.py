@@ -66,3 +66,15 @@ def recipe_update(request, pk):
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def recipe_delete(request, pk):
+    recipe = Recipe.objects.get(id=pk)
+
+    if recipe.user != request.user:
+        return Response({'detail': 'You do not have permission to update this recipe.'}, status=status.HTTP_403_FORBIDDEN)
+
+    recipe.delete()
+
+    return Response('Recipe successfully deleted!')

@@ -47,3 +47,22 @@ def recipe_create(request):
         serializer.save(user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def recipe_update(request, pk):
+    recipe = Recipe.objects.get(id=pk)
+
+    if recipe.user != request.user:
+        return Response({'detail': 'You do not have permission to update this recipe.'}, status=status.HTTP_403_FORBIDDEN)
+
+    if request.method == 'GET':
+        serializer = RecipeSerializer(recipe)
+        return Response(serializer.data)
+
+    serializer = RecipeSerializer(instance=recipe, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

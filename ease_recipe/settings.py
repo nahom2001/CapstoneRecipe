@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framwork', #installing rest framework
 ]
 
 AUTH_USER_MODEL = 'api.User'

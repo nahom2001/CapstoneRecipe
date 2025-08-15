@@ -60,6 +60,24 @@ def recipe_detail(request, pk):
     serializer = RecipeSerializer(recipe, many=False)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def recipe_category(request, category_name):
+    try:
+        category = Category.objects.get(category_name__iexact=category_name)
+    except Category.DoesNotExist:
+        return Response({"detail": "Category not found."}, status=404)
+
+    recipes = category.recipes.all()
+    serializer = RecipeSerializer(recipes, many=True)
+
+    return Response({
+        "category": {
+            "name": category.category_name
+        },
+        "recipes": serializer.data
+    })
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def recipe_create(request):

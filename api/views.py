@@ -1,7 +1,7 @@
 from rest_framework.parsers import FormParser, MultiPartParser
 from django.shortcuts import render
-from .models import Recipe
-from .serializers import RecipeSummarySerializer, RecipeSerializer
+from .models import Recipe, Ingredient, Category
+from .serializers import RecipeSummarySerializer, RecipeSerializer, CategorySerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -9,6 +9,10 @@ from rest_framework.decorators import permission_classes
 from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.pagination import PageNumberPagination
+from .utils import filter_recipes, paginate_queryset
+
+
 
 
 # Create your views here.
@@ -50,8 +54,11 @@ def api_menu(request):
 @api_view(['GET'])
 def recipe_list(request):
     recipes = Recipe.objects.all().order_by('id')
-    serializer = RecipeSummarySerializer(recipes, many=True)
-    return Response(serializer.data)  # Return serialized data instead of raw queryset
+    filtered_recipes = filter_recipes(recipes, request.GET)
+    paginated_recipes, paginator = paginate_queryset(filtered_recipes, request) 
+    serializer = RecipeSummarySerializer(paginated_recipes, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -101,6 +108,15 @@ def recipe_create(request):
     serializer = RecipeSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(user=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def category_create(request):
+    serializer = CategorySerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()  
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

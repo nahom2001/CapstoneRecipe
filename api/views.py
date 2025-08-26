@@ -47,8 +47,21 @@ class MyTokenObtainPairView(TokenObtainPairView):
     @swagger_auto_schema(
         operation_description="Obtain JWT token using form data",
         manual_parameters=[
-            openapi.Parameter('username', openapi.IN_FORM, type=openapi.TYPE_STRING, required=True),
-            openapi.Parameter('password', openapi.IN_FORM, type=openapi.TYPE_STRING, required=True)
+            openapi.Parameter(
+                'username',
+                openapi.IN_FORM,
+                type=openapi.TYPE_STRING,
+                description='username',
+                required=True
+            ),
+            openapi.Parameter(
+                'password',
+                openapi.IN_FORM,
+                type=openapi.TYPE_STRING,
+                format='password',  # This hides/masks the password input
+                description='password',
+                required=True
+            )
         ],
         responses={200: 'JWT token returned'}
     )
